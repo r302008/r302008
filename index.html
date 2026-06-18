@@ -3,251 +3,301 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shop Task Manager</title>
+<title>Shop Helper</title>
 
 <style>
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
 
 body{
-background:#f1f5f9;
-padding:20px;
+    background:#f1f5f9;
+    padding:20px;
 }
 
 .container{
-max-width:700px;
-margin:auto;
-background:white;
-padding:20px;
-border-radius:15px;
-box-shadow:0 5px 20px rgba(0,0,0,0.1);
+    max-width:700px;
+    margin:auto;
 }
 
-h1{
-text-align:center;
-margin-bottom:20px;
-color:#2563eb;
+.header{
+    text-align:center;
+    margin-bottom:20px;
 }
 
-.input-section{
-display:grid;
-grid-template-columns:1fr;
-gap:10px;
-margin-bottom:20px;
+.header h1{
+    color:#2563eb;
 }
 
-input,select{
-padding:12px;
-border:1px solid #ddd;
-border-radius:8px;
-font-size:16px;
+.section{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:15px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
 
-button{
-padding:12px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-size:16px;
+.section h2{
+    margin-bottom:15px;
 }
 
-.add-btn{
-background:#2563eb;
-color:white;
+.input-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:15px;
 }
 
-.add-btn:hover{
-background:#1d4ed8;
+.input-row input{
+    flex:1;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+}
+
+.input-row button{
+    padding:12px 18px;
+    border:none;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+}
+
+.input-row button:hover{
+    background:#1d4ed8;
 }
 
 .task{
-background:#f8fafc;
-padding:15px;
-border-radius:10px;
-margin-bottom:10px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#f8fafc;
+    padding:12px;
+    margin-bottom:10px;
+    border-radius:10px;
 }
 
 .task.done{
-opacity:0.6;
-text-decoration:line-through;
-}
-
-.task-left{
-display:flex;
-flex-direction:column;
-gap:5px;
-}
-
-.category{
-font-size:12px;
-color:#666;
-}
-
-.priority{
-font-size:12px;
-font-weight:bold;
-}
-
-.high{
-color:red;
-}
-
-.medium{
-color:orange;
-}
-
-.low{
-color:green;
+    text-decoration:line-through;
+    opacity:0.6;
 }
 
 .actions button{
-margin-left:5px;
-padding:8px 12px;
+    margin-left:5px;
+    border:none;
+    padding:8px 12px;
+    border-radius:6px;
+    cursor:pointer;
 }
 
 .done-btn{
-background:#16a34a;
-color:white;
+    background:#16a34a;
+    color:white;
 }
 
 .delete-btn{
-background:#dc2626;
-color:white;
+    background:#dc2626;
+    color:white;
 }
 
-.stats{
-display:flex;
-justify-content:space-between;
-margin-bottom:15px;
-font-weight:bold;
+.counter{
+    font-size:14px;
+    color:#555;
+    margin-bottom:10px;
 }
 </style>
 </head>
-
 <body>
 
 <div class="container">
 
-<h1>🏪 Shop Task Manager</h1>
+    <div class="header">
+        <h1>🏪 Shop Helper</h1>
+    </div>
 
-<div class="stats">
-<span>Total: <span id="total">0</span></span>
-<span>Completed: <span id="completed">0</span></span>
-</div>
+    <!-- ITEMS SECTION -->
+    <div class="section">
+        <h2>📦 Items</h2>
+        <div class="counter">
+            Total Items Tasks: <span id="itemsCount">0</span>
+        </div>
 
-<div class="input-section">
-<input type="text" id="taskInput" placeholder="Enter task">
+        <div class="input-row">
+            <input type="text" id="itemInput" placeholder="Add item task">
+            <button onclick="addItemTask()">Add</button>
+        </div>
 
-<select id="category">
-<option>Inventory</option>
-<option>Payments</option>
-<option>Supplier</option>
-<option>Daily Work</option>
-</select>
+        <div id="itemsList"></div>
+    </div>
 
-<select id="priority">
-<option value="High">High Priority</option>
-<option value="Medium">Medium Priority</option>
-<option value="Low">Low Priority</option>
-</select>
+    <!-- PAYMENTS SECTION -->
+    <div class="section">
+        <h2>💰 Payments</h2>
+        <div class="counter">
+            Total Payment Tasks: <span id="paymentsCount">0</span>
+        </div>
 
-<button class="add-btn" onclick="addTask()">Add Task</button>
-</div>
+        <div class="input-row">
+            <input type="text" id="paymentInput" placeholder="Add payment task">
+            <button onclick="addPaymentTask()">Add</button>
+        </div>
 
-<div id="taskList"></div>
+        <div id="paymentsList"></div>
+    </div>
 
 </div>
 
 <script>
 
-let tasks = JSON.parse(localStorage.getItem("shopTasks")) || [];
+let itemTasks =
+JSON.parse(localStorage.getItem("itemTasks")) || [];
 
-function saveTasks(){
-localStorage.setItem("shopTasks",JSON.stringify(tasks));
+let paymentTasks =
+JSON.parse(localStorage.getItem("paymentTasks")) || [];
+
+function saveData(){
+    localStorage.setItem(
+        "itemTasks",
+        JSON.stringify(itemTasks)
+    );
+
+    localStorage.setItem(
+        "paymentTasks",
+        JSON.stringify(paymentTasks)
+    );
 }
 
-function addTask(){
+function addItemTask(){
 
-const text = document.getElementById("taskInput").value.trim();
-const category = document.getElementById("category").value;
-const priority = document.getElementById("priority").value;
+    const input =
+    document.getElementById("itemInput");
 
-if(text===""){
-alert("Enter a task");
-return;
+    if(input.value.trim() === "") return;
+
+    itemTasks.push({
+        text: input.value,
+        done:false
+    });
+
+    input.value = "";
+
+    saveData();
+    render();
 }
 
-tasks.push({
-text,
-category,
-priority,
-done:false
-});
+function addPaymentTask(){
 
-document.getElementById("taskInput").value="";
+    const input =
+    document.getElementById("paymentInput");
 
-saveTasks();
-renderTasks();
+    if(input.value.trim() === "") return;
+
+    paymentTasks.push({
+        text: input.value,
+        done:false
+    });
+
+    input.value = "";
+
+    saveData();
+    render();
 }
 
-function toggleTask(index){
-tasks[index].done=!tasks[index].done;
-saveTasks();
-renderTasks();
+function toggleItem(index){
+    itemTasks[index].done =
+    !itemTasks[index].done;
+
+    saveData();
+    render();
 }
 
-function deleteTask(index){
-tasks.splice(index,1);
-saveTasks();
-renderTasks();
+function togglePayment(index){
+    paymentTasks[index].done =
+    !paymentTasks[index].done;
+
+    saveData();
+    render();
 }
 
-function renderTasks(){
+function deleteItem(index){
+    itemTasks.splice(index,1);
 
-const taskList=document.getElementById("taskList");
-taskList.innerHTML="";
-
-let completed=0;
-
-tasks.forEach((task,index)=>{
-
-if(task.done) completed++;
-
-taskList.innerHTML += `
-<div class="task ${task.done ? 'done' : ''}">
-<div class="task-left">
-<strong>${task.text}</strong>
-<span class="category">${task.category}</span>
-<span class="priority ${task.priority.toLowerCase()}">${task.priority}</span>
-</div>
-
-<div class="actions">
-<button class="done-btn"
-onclick="toggleTask(${index})">
-✓
-</button>
-
-<button class="delete-btn"
-onclick="deleteTask(${index})">
-🗑
-</button>
-</div>
-</div>
-`;
-});
-
-document.getElementById("total").textContent=tasks.length;
-document.getElementById("completed").textContent=completed;
+    saveData();
+    render();
 }
 
-renderTasks();
+function deletePayment(index){
+    paymentTasks.splice(index,1);
+
+    saveData();
+    render();
+}
+
+function render(){
+
+    const itemsList =
+    document.getElementById("itemsList");
+
+    itemsList.innerHTML = "";
+
+    itemTasks.forEach((task,index)=>{
+
+        itemsList.innerHTML += `
+        <div class="task ${task.done ? 'done' : ''}">
+            <span>${task.text}</span>
+
+            <div class="actions">
+                <button class="done-btn"
+                onclick="toggleItem(${index})">
+                ✓
+                </button>
+
+                <button class="delete-btn"
+                onclick="deleteItem(${index})">
+                🗑
+                </button>
+            </div>
+        </div>
+        `;
+    });
+
+    const paymentsList =
+    document.getElementById("paymentsList");
+
+    paymentsList.innerHTML = "";
+
+    paymentTasks.forEach((task,index)=>{
+
+        paymentsList.innerHTML += `
+        <div class="task ${task.done ? 'done' : ''}">
+            <span>${task.text}</span>
+
+            <div class="actions">
+                <button class="done-btn"
+                onclick="togglePayment(${index})">
+                ✓
+                </button>
+
+                <button class="delete-btn"
+                onclick="deletePayment(${index})">
+                🗑
+                </button>
+            </div>
+        </div>
+        `;
+    });
+
+    document.getElementById("itemsCount")
+    .textContent = itemTasks.length;
+
+    document.getElementById("paymentsCount")
+    .textContent = paymentTasks.length;
+}
+
+render();
 
 </script>
 
