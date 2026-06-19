@@ -286,6 +286,26 @@ document.getElementById(
 "expenseAmount").value="";
 
 }
+let purchases =
+JSON.parse(
+localStorage.getItem("purchases")
+) || [];
+
+function getCustomerDue(name){
+
+let total = 0;
+
+purchases.forEach(p => {
+
+if(p.customer === name){
+total += p.amount;
+}
+
+});
+
+return total;
+
+}
 
 function renderExpenses(){
 
@@ -481,10 +501,7 @@ let customers =
 JSON.parse(
 localStorage.getItem("customers")
 ) || [];
-let purchases =
-JSON.parse(
-localStorage.getItem("purchases")
-) || [];
+
 
 function addCustomer(){
 
