@@ -63,7 +63,9 @@ onclick="openPage('dashboard')">
 <div class="card" onclick="openPage('dailyExpenses')">
 💸 Daily Expenses
 </div>
-<div class="card">💰 Daily Sales</div>
+<div class="card" onclick="openPage('dailySales')">
+💰 Daily Sales
+</div>
 <div class="card">📄 Monthly Bills</div>
 <div class="card">📒 Khata Book</div></div><!-- HOME --><div id="home" class="page"><button class="back"
 onclick="openPage('dashboard')">
@@ -114,6 +116,37 @@ Add Expense
 
 <h3>
 Total ₹<span id="expenseTotal">0</span>
+</h3>
+
+</div>
+<div id="dailySales" class="page">
+
+<button class="back"
+onclick="openPage('shop')">
+⬅ Back
+</button>
+
+<h2>💰 Daily Sales</h2>
+
+<input type="text"
+id="saleName"
+placeholder="Sale Name">
+
+<input type="number"
+id="saleAmount"
+placeholder="Amount">
+
+<input type="date"
+id="saleDate">
+
+<button onclick="addSale()">
+Add Sale
+</button>
+
+<div id="saleList"></div>
+
+<h3>
+Total ₹<span id="saleTotal">0</span>
 </h3>
 
 </div>
@@ -207,6 +240,84 @@ document.getElementById(
 }
 
 renderExpenses();
+
+let sales =
+JSON.parse(
+localStorage.getItem("sales")
+) || [];
+
+function addSale(){
+
+let name =
+document.getElementById(
+"saleName").value;
+
+let amount =
+document.getElementById(
+"saleAmount").value;
+
+let date =
+document.getElementById(
+"saleDate").value;
+
+if(!name || !amount || !date){
+alert("Fill all fields");
+return;
+}
+
+sales.push({
+name:name,
+amount:Number(amount),
+date:date
+});
+
+localStorage.setItem(
+"sales",
+JSON.stringify(sales)
+);
+
+renderSales();
+
+document.getElementById(
+"saleName").value="";
+
+document.getElementById(
+"saleAmount").value="";
+}
+
+function renderSales(){
+
+let list =
+document.getElementById(
+"saleList");
+
+if(!list) return;
+
+list.innerHTML="";
+
+let total=0;
+
+sales.forEach(item=>{
+
+total += item.amount;
+
+list.innerHTML += `
+<div class="card">
+<b>${item.name}</b><br>
+₹${item.amount}<br>
+${item.date}
+</div>
+`;
+
+});
+
+document.getElementById(
+"saleTotal"
+).innerText=total;
+
+}
+
+renderSales();
 
 </script></body>
 </html>.
