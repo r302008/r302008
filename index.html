@@ -206,6 +206,29 @@ Add Customer
 
 <div id="customerList"></div>
 
+<hr>
+
+<h3>Add Purchase</h3>
+
+<input type="text"
+id="purchaseCustomer"
+placeholder="Customer Name">
+
+<input type="text"
+id="purchaseItem"
+placeholder="Item Name">
+
+<input type="number"
+id="purchaseAmount"
+placeholder="Amount">
+
+<input type="date"
+id="purchaseDate">
+
+<button onclick="addPurchase()">
+Add Purchase
+</button>
+
 </div>
 <script>
 
@@ -503,8 +526,14 @@ list.innerHTML += `
 
 <b>${customer.name}</b><br>
 
-Due ₹${customer.due}
+${purchases
+.filter(p=>p.customer===customer.name)
+.map(p=>`
+📅 ${p.date}<br>
+${p.item} ₹${p.amount}<br><br>
+`).join("")}
 
+Due ₹${getCustomerDue(customer.name)}
 <br><br>
 
 <button
