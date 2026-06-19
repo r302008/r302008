@@ -60,7 +60,9 @@ onclick="openPage('dashboard')">
 </button>
 
 <h2>🏪 Shop</h2><div class="card">📦 Items</div>
-<div class="card">💸 Daily Expenses</div>
+<div class="card" onclick="openPage('dailyExpenses')">
+💸 Daily Expenses
+</div>
 <div class="card">💰 Daily Sales</div>
 <div class="card">📄 Monthly Bills</div>
 <div class="card">📒 Khata Book</div></div><!-- HOME --><div id="home" class="page"><button class="back"
@@ -82,7 +84,40 @@ onclick="openPage('dashboard')">
 <div class="card">🎁 Gifts</div>
 <div class="card">🍬 Sweets & Snacks</div>
 <div class="card">🪔 Decorations</div>
-<div class="card">📦 Other Festival Expenses</div></div><script>
+<div class="card">📦 Other Festival Expenses</div>
+</div>
+<div id="dailyExpenses" class="page">
+
+<button class="back"
+onclick="openPage('shop')">
+⬅ Back
+</button>
+
+<h2>💸 Daily Expenses</h2>
+
+<input type="text"
+id="expenseName"
+placeholder="Expense Name">
+
+<input type="number"
+id="expenseAmount"
+placeholder="Amount">
+
+<input type="date"
+id="expenseDate">
+
+<button onclick="addExpense()">
+Add Expense
+</button>
+
+<div id="expenseList"></div>
+
+<h3>
+Total ₹<span id="expenseTotal">0</span>
+</h3>
+
+</div>
+<script>
 
 function openPage(id){
 
@@ -93,6 +128,85 @@ document.getElementById(id)
 .classList.add('active');
 
 }
+
+let expenses =
+JSON.parse(
+localStorage.getItem("expenses")
+) || [];
+
+function addExpense(){
+
+let name =
+document.getElementById(
+"expenseName").value;
+
+let amount =
+document.getElementById(
+"expenseAmount").value;
+
+let date =
+document.getElementById(
+"expenseDate").value;
+
+if(!name || !amount || !date){
+alert("Fill all fields");
+return;
+}
+
+expenses.push({
+name:name,
+amount:Number(amount),
+date:date
+});
+
+localStorage.setItem(
+"expenses",
+JSON.stringify(expenses)
+);
+
+renderExpenses();
+
+document.getElementById(
+"expenseName").value="";
+
+document.getElementById(
+"expenseAmount").value="";
+
+}
+
+function renderExpenses(){
+
+let list =
+document.getElementById(
+"expenseList");
+
+if(!list) return;
+
+list.innerHTML="";
+
+let total=0;
+
+expenses.forEach(item=>{
+
+total += item.amount;
+
+list.innerHTML += `
+<div class="card">
+<b>${item.name}</b><br>
+₹${item.amount}<br>
+${item.date}
+</div>
+`;
+
+});
+
+document.getElementById(
+"expenseTotal"
+).innerText=total;
+
+}
+
+renderExpenses();
 
 </script></body>
 </html>.
