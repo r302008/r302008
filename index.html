@@ -66,7 +66,9 @@ onclick="openPage('dashboard')">
 <div class="card" onclick="openPage('dailySales')">
 💰 Daily Sales
 </div>
-<div class="card">📄 Monthly Bills</div>
+<div class="card" onclick="openPage('monthlyBills')">
+📄 Monthly Bills
+</div>
 <div class="card">📒 Khata Book</div></div><!-- HOME --><div id="home" class="page"><button class="back"
 onclick="openPage('dashboard')">
 ⬅ Back
@@ -147,6 +149,38 @@ Add Sale
 
 <h3>
 Total ₹<span id="saleTotal">0</span>
+</h3>
+
+</div>
+
+<div id="monthlyBills" class="page">
+
+<button class="back"
+onclick="openPage('shop')">
+⬅ Back
+</button>
+
+<h2>📄 Monthly Bills</h2>
+
+<input type="text"
+id="billName"
+placeholder="Bill Name">
+
+<input type="number"
+id="billAmount"
+placeholder="Amount">
+
+<input type="date"
+id="billDate">
+
+<button onclick="addBill()">
+Add Bill
+</button>
+
+<div id="billList"></div>
+
+<h3>
+Total ₹<span id="billTotal">0</span>
 </h3>
 
 </div>
@@ -318,6 +352,84 @@ document.getElementById(
 }
 
 renderSales();
+
+let bills =
+JSON.parse(
+localStorage.getItem("bills")
+) || [];
+
+function addBill(){
+
+let name =
+document.getElementById(
+"billName").value;
+
+let amount =
+document.getElementById(
+"billAmount").value;
+
+let date =
+document.getElementById(
+"billDate").value;
+
+if(!name || !amount || !date){
+alert("Fill all fields");
+return;
+}
+
+bills.push({
+name:name,
+amount:Number(amount),
+date:date
+});
+
+localStorage.setItem(
+"bills",
+JSON.stringify(bills)
+);
+
+renderBills();
+
+document.getElementById(
+"billName").value="";
+
+document.getElementById(
+"billAmount").value="";
+}
+
+function renderBills(){
+
+let list =
+document.getElementById(
+"billList");
+
+if(!list) return;
+
+list.innerHTML="";
+
+let total=0;
+
+bills.forEach(item=>{
+
+total += item.amount;
+
+list.innerHTML += `
+<div class="card">
+<b>${item.name}</b><br>
+₹${item.amount}<br>
+${item.date}
+</div>
+`;
+
+});
+
+document.getElementById(
+"billTotal"
+).innerText=total;
+
+}
+
+renderBills();
 
 </script></body>
 </html>.
