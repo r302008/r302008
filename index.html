@@ -69,7 +69,9 @@ onclick="openPage('dashboard')">
 <div class="card" onclick="openPage('monthlyBills')">
 📄 Monthly Bills
 </div>
-<div class="card">📒 Khata Book</div></div><!-- HOME --><div id="home" class="page"><button class="back"
+<div class="card" onclick="openPage('khataBook')">
+📒 Khata Book
+</div></div><!-- HOME --><div id="home" class="page"><button class="back"
 onclick="openPage('dashboard')">
 ⬅ Back
 </button>
@@ -182,6 +184,27 @@ Add Bill
 <h3>
 Total ₹<span id="billTotal">0</span>
 </h3>
+
+</div>
+
+<div id="khataBook" class="page">
+
+<button class="back"
+onclick="openPage('shop')">
+⬅ Back
+</button>
+
+<h2>📒 Khata Book</h2>
+
+<input type="text"
+id="customerName"
+placeholder="Customer Name">
+
+<button onclick="addCustomer()">
+Add Customer
+</button>
+
+<div id="customerList"></div>
 
 </div>
 <script>
@@ -430,6 +453,93 @@ document.getElementById(
 }
 
 renderBills();
+
+let customers =
+JSON.parse(
+localStorage.getItem("customers")
+) || [];
+
+function addCustomer(){
+
+let name =
+document.getElementById(
+"customerName").value;
+
+if(!name){
+alert("Enter customer name");
+return;
+}
+
+customers.push({
+name:name,
+due:0
+});
+
+localStorage.setItem(
+"customers",
+JSON.stringify(customers)
+);
+
+renderCustomers();
+
+document.getElementById(
+"customerName").value="";
+}
+
+function renderCustomers(){
+
+let list =
+document.getElementById(
+"customerList");
+
+if(!list) return;
+
+list.innerHTML="";
+
+customers.forEach((customer,index)=>{
+
+list.innerHTML += `
+<div class="card">
+
+<b>${customer.name}</b><br>
+
+Due ₹${customer.due}
+
+<br><br>
+
+<button
+onclick="addDue(${index})">
+Add Due
+</button>
+
+</div>
+`;
+
+});
+
+}
+
+function addDue(index){
+
+let amount =
+prompt("Enter Due Amount");
+
+if(!amount) return;
+
+customers[index].due +=
+Number(amount);
+
+localStorage.setItem(
+"customers",
+JSON.stringify(customers)
+);
+
+renderCustomers();
+
+}
+
+renderCustomers();
+
 
 </script></body>
 </html>.
